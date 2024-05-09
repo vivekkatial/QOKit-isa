@@ -36,6 +36,22 @@ If compilation fails, try installing just the Python version using `QOKIT_PYTHON
 
 Installation can be verified by running tests using `pytest`.
 
+### Running with Docker
+
+```
+docker build -t qokit .
+```
+
+Run the container with the following command:
+```
+docker run -p 8888:8888 qokit
+```
+
+Run the container with the following command to mount the current directory:
+```
+docker run -v $(pwd):/app -p 8888:8888 qokit
+```
+
 #### MaxCut
 
 For MaxCut, the datasets in `qokit/assets/maxcut_datasets` must be inflated
