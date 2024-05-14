@@ -4,9 +4,10 @@ import numpy as np
 
 
 class GraphInstance:
-    def __init__(self, G, graph_type):
+    def __init__(self, G, graph_type, weight_type=None):
         self.G = G
         self.graph_type = graph_type
+        self.weight_type = weight_type
         self.weight_matrix = None
         self.brute_force_sol = None
         self.removed_edges = []
@@ -15,13 +16,43 @@ class GraphInstance:
     def __repr__(self):
         return f"This is a {self.graph_type} {self.G} graph instance"
 
+
     def allocate_random_weights(self):
-        # Allocate random costs to the edges for now
-        for (u, v) in self.G.edges():
-            if self.graph_type == "4-Regular Graph Fixed Weights":
-                self.G.edges[u, v]["weight"] = random.randint(-1, 1)
-            else:
-                self.G.edges[u, v]["weight"] = random.randint(0, 10)
+        """Assigns normalized random weights to all edges in the graph based on the specified weight type, unless weight_type is None."""
+        if self.weight_type is None:
+            print("No weight type specified; skipping weight allocation.")
+            return  # Exit the method if no weight type is provided.
+
+        # Define lambda functions for weight assignments based on the specified weight type
+        if self.weight_type == "uniform":
+            weights = [random.uniform(0, 1) for _ in self.G.edges()]
+        elif self.weight_type == "normal":
+            weights = [random.normalvariate(0, 1) for _ in self.G.edges()]
+        elif self.weight_type == "exponential":
+            weights = [random.expovariate(1) for _ in self.G.edges()]
+        elif self.weight_type == "log-normal":
+            weights = [random.lognormvariate(0, 1) for _ in self.G.edges()]
+        elif self.weight_type == "binomial":
+            weights = [np.random.binomial(10, 0.5) for _ in self.G.edges()]
+        elif self.weight_type == "power-law":
+            weights = [np.random.power(5) for _ in self.G.edges()]
+        else:
+            weights = [random.uniform(0, 1) for _ in self.G.edges()]
+            print("Warning: Undefined weight type. Defaulting to uniform distribution.")
+
+        # Normalize weights to the range [0, 1]
+        min_weight = min(weights)
+        max_weight = max(weights)
+        if max_weight != min_weight:
+            normalized_weights = [(w - min_weight) / (max_weight - min_weight) for w in weights]
+        else:
+            normalized_weights = [0.5 for _ in weights]  # Default to middle if all weights are the same
+
+        # Assign normalized weights to each edge
+        for (u, v), weight in zip(self.G.edges(), normalized_weights):
+            self.G[u][v]["weight"] = weight
+
+
 
     def compute_weight_matrix(self):
         G = self.G

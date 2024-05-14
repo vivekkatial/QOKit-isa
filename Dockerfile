@@ -7,9 +7,28 @@ ENV JUPYTER_ENABLE_LAB=yes
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc g++ python3-dev git && \
-    rm -rf /var/lib/apt/lists/*
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    build-essential \
+    libffi-dev \
+    libssl-dev \
+    libblas-dev \
+    liblapack-dev \
+    libopenblas-dev \
+    pkg-config \
+    libsuitesparse-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Check if umfpack.h is present
+RUN find /usr -name "umfpack.h"
+
+# Set environment variables
+ENV LD_LIBRARY_PATH=/usr/lib:/usr/local/lib
+ENV C_INCLUDE_PATH=/usr/include:/usr/local/include
+ENV CPPFLAGS="-I/usr/include/suitesparse"
 
 COPY . /app
 

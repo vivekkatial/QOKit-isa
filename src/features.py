@@ -1,10 +1,10 @@
 import networkx as nx
 import numpy as np
 import pynauty as nauty
+import scipy.stats as stats
 
 from networkx.algorithms.distance_measures import radius
 from itertools import permutations
-
 
 def get_graph_features(G):
     """
@@ -38,10 +38,9 @@ def get_graph_features(G):
         features["average_distance"] = average_distance
     features["bipartite"] = nx.is_bipartite(G)
 
-    # features['Chromatic Index'] =
-    # features['Chromatic Number'] =
-    # features['Circumference'] =
-    features["clique_number"] = nx.graph_clique_number(G)
+    # Find all cliques in the graph
+    cliques = list(nx.find_cliques(G))
+    features["clique_number"] = max(len(clique) for clique in cliques)
     features["connected"] = nx.algorithms.components.is_connected(G)
     features["density"] = nx.classes.function.density(G)
     if nx.algorithms.components.is_connected(G):
@@ -52,16 +51,8 @@ def get_graph_features(G):
         "edge_connectivity"
     ] = nx.algorithms.connectivity.connectivity.edge_connectivity(G)
     features["eulerian"] = nx.algorithms.euler.is_eulerian(G)
-    # features['Genus'] =
-    # features['Girth'] =
-    # features['Hamiltonian'] =
-    # features['independence_number'] = nx.algorithms.mis.maximal_independent_set(G)
-    # features['Index'] =
-    features["laplacian_largest_eigenvalue"] = max(e).real
-    # features['Longest Induced Cycle'] =
-    # features['Longest Induced Path'] =
-    # features['Matching Number'] =
 
+    features["laplacian_largest_eigenvalue"] = max(e).real
     features["maximum_degree"] = max([G.degree[i] for i in G.nodes])
     features["minimum_degree"] = min([G.degree[i] for i in G.nodes])
     features["minimum_dominating_set"] = len(nx.algorithms.dominating.dominating_set(G))
@@ -101,16 +92,75 @@ def get_graph_features(G):
     features["group_size"] = calculate_group_size(G_pynauty)  # Based on PyNauty
     features["number_of_orbits"] = nauty_feats[-1]  # Based on PyNauty
     features["is_distance_regular"] = nx.is_distance_regular(G)
+    features["entropy"] = get_shannon_entropy(G)
 
     return features
 
+def get_weighted_graph_features(G):
+    """
+    Generates a list of weight-related features for the given connected weighted graph.
+
+    Args:
+        G (object): networkx graph object with weights
+
+    Returns:
+        features (dict): a dictionary of the weight-specific features in the given graph
+    """
+
+    if not nx.is_connected(G):
+        raise ValueError("The graph must be connected to analyze weighted features.")
+
+    features = {}
+
+    # Check if any edge has a 'weight' attribute
+    if any('weight' in data for _, _, data in G.edges(data=True)):
+        weights = [data['weight'] for _, _, data in G.edges(data=True)]
+    else:
+        weights = [1] * G.number_of_edges()
+
+    # Basic weight statistics
+    features['mean_weight'] = float(np.mean(weights))
+    features['median_weight'] = float(np.median(weights))
+    features['std_dev_weight'] = float(np.std(weights))
+    features['min_weight'] = float(np.min(weights))
+    features['max_weight'] = float(np.max(weights))
+    features['range_weight'] = features['max_weight'] - features['min_weight']
+    features['skewness_weight'] = stats.skew(weights)
+    features['kurtosis_weight'] = stats.kurtosis(weights)
+    
+    # Quantile-based features
+    features['first_quartile'] = np.percentile(weights, 25)
+    features['third_quartile'] = np.percentile(weights, 75)
+    features['interquartile_range'] = features['third_quartile'] - features['first_quartile']
+
+    # Extremes and variability
+    features['variance_weight'] = np.var(weights)
+    features['coefficient_of_variation'] = features['std_dev_weight'] / features['mean_weight'] if features['mean_weight'] != 0 else float('inf')
+
+    # Weighted graph properties
+    features['weighted_average_clustering'] = nx.average_clustering(G, weight='weight')
+    features['weighted_average_shortest_path_length'] = nx.average_shortest_path_length(G, weight='weight')
+
+    # Weighted Diameter and Radius
+    features['weighted_diameter'] = nx.diameter(G, weight='weight')
+    features['weighted_radius'] = nx.radius(G, weight='weight')
+
+    # Weighted Degree
+    weighted_degrees = {node: sum(data['weight'] if 'weight' in data else 1 for _, data in G[node].items()) for node in G.nodes()}
+    features['maximum_weighted_degree'] = max(weighted_degrees.values())
+    features['minimum_weighted_degree'] = min(weighted_degrees.values())
+    # If anything is nan, replace with 0
+    for key, value in features.items():
+        if np.isnan(value):
+            features[key] = 0
+    
+    return features
 
 def is_subcycle(small_cycle, big_cycle):
     """
     Checks if small_cycle is a subcycle of big_cycle.
     """
     return all(node in big_cycle for node in small_cycle)
-
 
 def count_minimal_odd_cycles(graph):
     """
@@ -141,10 +191,6 @@ def count_minimal_odd_cycles(graph):
 
     return len(minimal_odd_cycles)
 
-
-# Calculate the number of cut vertices in the graph G
-
-
 def number_of_cut_vertices(G):
     """
     Calculate the number of cut vertices in the graph G.
@@ -156,7 +202,6 @@ def number_of_cut_vertices(G):
     int: The number of cut vertices in G.
     """
     return len(list(nx.articulation_points(G)))
-
 
 def calculate_group_size(G):
     """
@@ -176,3 +221,36 @@ def calculate_group_size(G):
     group_size = grpsize1 * (10**grpsize2)
 
     return group_size
+
+from collections import defaultdict, Counter
+
+def get_shannon_entropy(G):
+    """ Calculate the Shannon entropy of the graph G using the implementation in
+    https://arxiv.org/pdf/2012.04713
+
+    Parameters:
+    G (networkx.Graph): A networkx graph.
+    """
+    g = nauty.Graph(number_of_vertices=G.number_of_nodes(), directed=nx.is_directed(G),
+                adjacency_dict = get_adjacency_dict(G))
+    aut = nauty.autgrp(g)
+    S = 0
+    for orbit, orbit_size in Counter(aut[3]).items():
+        S += ((orbit_size * np.log(orbit_size)) / G.number_of_nodes())
+    return S
+
+def get_adjacency_dict(G):
+    """Implementation of the adjacency dictionary from the graph G in 
+    https://arxiv.org/pdf/2012.04713
+
+    Parameters:
+    G (networkx.Graph): A networkx graph.
+    """
+    adjacency_dict = {}
+    for n, neigh_dict in G.adjacency():
+        neigh_list = []
+        for neigh, attr_dict in neigh_dict.items():
+            assert(len(attr_dict) == 0)
+            neigh_list.append(neigh)
+        adjacency_dict[n] = neigh_list
+    return adjacency_dict
