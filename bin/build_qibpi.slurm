@@ -23,7 +23,11 @@ source ~/.bashrc
 
 # The script expects two arguments: graph_type and weight_type
 echo "Running instance for graph type: $1, weight type: $2"
-apptainer exec --env-file .env qaoa.sif python src/run_instance.py \
+apptainer exec \
+    --env-file .env \
+    --pwd /mnt \
+    --bind $(pwd):/mnt \
+    qaoa.sif python src/run_instance.py \
     --track True \
     --graph_type "$1" \
     --num_nodes 8 \
