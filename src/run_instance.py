@@ -105,13 +105,14 @@ def main():
     if TRACK:
         # Set experiment name to be INFORMS 2024 IJOC 
         # mlflow.set_experiment("QAOA-Parameter-Initialisation")
-        mlflow.set_experiment("QAOA-QIBPI-Generator")
+        mlflow.set_experiment("QAOA-QIBPI-Instances")
         mlflow.start_run(run_name=f"{GRAPH_TYPE} Graph")
         mlflow.log_params(graph_features)
         mlflow.log_params(weighted_features)
         mlflow.log_param("num_nodes", NUM_NODES)
         mlflow.log_param("graph_type", GRAPH_TYPE)
         mlflow.log_param("weight_type", WEIGHT_TYPE)
+        mlflow.log_param("max_layers", N_LAYERS)
 
 
     init_class = Initialisation(num_qubits=NUM_NODES, max_layers=N_LAYERS, source=GRAPH_TYPE)
@@ -223,9 +224,9 @@ def main():
         # Extract the variables from the row
         max_variables = max_row['variables'].values
         # Create a dict (gamma_i, beta_i) for each layer and convert to float
-        max_variables_dict = {f"gamma_{i}": float(max_variables[0][i]) for i in range(0, len(max_variables[0])//2)}
+        max_variables_dict = {f"gamma_{i}": float(max_variables[0][i]) for i in range(N_LAYERS)}
         # Make sure beta also starts from 0
-        max_variables_dict.update({f"beta_{i - N_LAYERS}": float(max_variables[0][i]) for i in range(len(max_variables[0])//2, len(max_variables[0]))})
+        max_variables_dict.update({f"beta_{i - N_LAYERS}": float(max_variables[0][i]) for i in range(N_LAYERS, 2*N_LAYERS)})
         
         # Save the DataFrame as a CSV file
         df.to_csv(f'{temp_dir}/evaluations.csv', index=False)
