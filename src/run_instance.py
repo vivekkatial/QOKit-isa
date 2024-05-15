@@ -224,7 +224,8 @@ def main():
         max_variables = max_row['variables'].values
         # Create a dict (gamma_i, beta_i) for each layer and convert to float
         max_variables_dict = {f"gamma_{i}": float(max_variables[0][i]) for i in range(0, len(max_variables[0])//2)}
-        max_variables_dict.update({f"beta_{i}": float(max_variables[0][i]) for i in range(len(max_variables[0])//2, len(max_variables[0]))})
+        # Make sure beta also starts from 0
+        max_variables_dict.update({f"beta_{i - N_LAYERS}": float(max_variables[0][i]) for i in range(len(max_variables[0])//2, len(max_variables[0]))})
         
         # Save the DataFrame as a CSV file
         df.to_csv(f'{temp_dir}/evaluations.csv', index=False)
