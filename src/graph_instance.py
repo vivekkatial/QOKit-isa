@@ -39,8 +39,9 @@ class GraphInstance:
         elif self.weight_type == "power-law":
             weights = [np.random.power(5) for _ in self.G.edges()]
         else:
-            weights = [random.uniform(0, 1) for _ in self.G.edges()]
-            print("Warning: Undefined weight type. Defaulting to uniform distribution.")
+            # make all weights the same
+            weights = [1 for _ in self.G.edges()]
+            print("No valid weight type specified; assigning all weights as 1.")
 
         # Normalize weights to the range [0, 1]
         min_weight = min(weights)

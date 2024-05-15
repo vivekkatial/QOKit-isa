@@ -231,26 +231,13 @@ def get_shannon_entropy(G):
     Parameters:
     G (networkx.Graph): A networkx graph.
     """
+    adjacency_dict = {node: list(neighbors) for node, neighbors in G.adjacency()}
+
     g = nauty.Graph(number_of_vertices=G.number_of_nodes(), directed=nx.is_directed(G),
-                adjacency_dict = get_adjacency_dict(G))
+                adjacency_dict = adjacency_dict)
     aut = nauty.autgrp(g)
     S = 0
     for orbit, orbit_size in Counter(aut[3]).items():
         S += ((orbit_size * np.log(orbit_size)) / G.number_of_nodes())
     return S
 
-def get_adjacency_dict(G):
-    """Implementation of the adjacency dictionary from the graph G in 
-    https://arxiv.org/pdf/2012.04713
-
-    Parameters:
-    G (networkx.Graph): A networkx graph.
-    """
-    adjacency_dict = {}
-    for n, neigh_dict in G.adjacency():
-        neigh_list = []
-        for neigh, attr_dict in neigh_dict.items():
-            assert(len(attr_dict) == 0)
-            neigh_list.append(neigh)
-        adjacency_dict[n] = neigh_list
-    return adjacency_dict
