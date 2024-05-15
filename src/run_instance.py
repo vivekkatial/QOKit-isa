@@ -29,7 +29,7 @@ logging.basicConfig(level=logging.INFO)
 start_time = time.time()
 
 # Constants
-LAYER_INDEPENDENT_METHODS = ['random', 'fixed_angles_constant', 'tqa', 'qibpi']
+LAYER_INDEPENDENT_METHODS = ['random', 'fixed_angles_constant', 'tqa']
 LAYER_DEPENDENT_METHODS = ['interp', 'fourier']
 
 def create_graph():
@@ -82,7 +82,7 @@ def run_qaoa(G, init_class, method, layer):
             print(f"Function value at iteration {evals['num_evals']}: {f(xk)}")
         evals['iterations'].append({'variables': xk.copy(), 'function_value': f(xk), 'num_evals': evals['num_evals']})
 
-    res = minimize(f, theta, method='SLSQP', options={'disp': True}, callback=callback)
+    res = minimize(f, theta, method='SLSQP', options={'disp': True, 'maxiter': 10000}, callback=callback)
 
     approximation_ratio = -f(res.x) / optimal_cut
     logging.info(f"Approximation ratio with {method} at p = {layer}: {approximation_ratio}")
@@ -104,7 +104,8 @@ def main():
     # If tracking is enabled, start the MLflow run
     if TRACK:
         # Set experiment name to be INFORMS 2024 IJOC 
-        mlflow.set_experiment("QAOA-Parameter-Initialisation")
+        # mlflow.set_experiment("QAOA-Parameter-Initialisation")
+        mlflow.set_experiment("QAOA-QIBPI-Generator")
         mlflow.start_run(run_name=f"{GRAPH_TYPE} Graph")
         mlflow.log_params(graph_features)
         mlflow.log_params(weighted_features)
@@ -173,10 +174,16 @@ def main():
         if num_evals is np.nan:
             # Allocate penalty value if the method did not reach the acceptable ratio, the penalty value is 2^NUM_NODES
             logging.info(f"Method: {method} did not reach an approximation ratio of {acceptable_ratio}.")
-            metrics[method] = 2**NUM_NODES
+            metrics[method] = 100000
+            if TRACK:
+                # Log the penalty value as True
+                mlflow.log_param(f"penalty_{method}", True)
         else:
             logging.info(f"Method: {method} reached an approximation ratio of {acceptable_ratio} in {num_evals} evaluations.")
             metrics[method] = num_evals
+            if TRACK:
+                # Log the penalty value as False
+                mlflow.log_param(f"penalty_{method}", False)
     
     logging.info(f"Metrics: {metrics}")
 
@@ -207,20 +214,47 @@ def main():
         # Save networkx graph as a GraphML file
         nx.write_graphml(G, f'{temp_dir}/graph.graphml')
 
+        # Find the highest value of the approximation ratio -- and its row
+        max_approximation_ratio = df['approximation_ratio'].max() 
+        max_row = df[df['approximation_ratio'] == max_approximation_ratio]
+        # If more than one row take the highest number of evaluations
+        if len(max_row) > 1:
+            max_row = max_row[max_row['num_evals'] == max_row['num_evals'].max()]
+        # Extract the variables from the row
+        max_variables = max_row['variables'].values
+        # Create a dict (gamma_i, beta_i) for each layer and convert to float
+        max_variables_dict = {f"gamma_{i}": float(max_variables[0][i]) for i in range(0, len(max_variables[0])//2)}
+        max_variables_dict.update({f"beta_{i}": float(max_variables[0][i]) for i in range(len(max_variables[0])//2, len(max_variables[0]))})
+        
+        # Save the DataFrame as a CSV file
+        df.to_csv(f'{temp_dir}/evaluations.csv', index=False)
+
         # Add the plots to the MLflow run
         if TRACK:
             mlflow.log_artifacts(temp_dir)
 
     # Add algo prefix to the metrics
-    metrics = {f"algo_{k}": v for k, v in metrics.items()}
+    metrics = {f"algo_{k}": float(v) for k, v in metrics.items()}
     # Get the approximation ratio for each method
     approximation_ratio = {f"approximation_ratio_{k}": v for k, v in results.items()}
     # Get max func evaluations for each method
     max_func_evals = {f"max_func_evals_{k}": max([iteration['num_evals'] for iteration in data['iterations']]) for k, data in evaluations.items()}
-    mlflow.log_metrics(metrics)
-    mlflow.log_metrics(approximation_ratio)
-    mlflow.log_metrics(max_func_evals)
-    mlflow.end_run()
+
+    # If tracking is enabled, log the metrics
+    if TRACK:
+        mlflow.log_metrics(metrics)
+        mlflow.log_metrics(approximation_ratio)
+        mlflow.log_metrics(max_func_evals)
+        # Log optimal parameters
+        mlflow.log_metrics(max_variables_dict)
+        mlflow.end_run()
+
+    # json dump the metrics
+    logging.info(json.dumps(metrics, indent=4))
+    logging.info(json.dumps(approximation_ratio, indent=4))
+    logging.info(json.dumps(max_func_evals, indent=4))
+    logging.info("best_method: " + best_method)
+    logging.info(json.dumps(max_variables_dict, indent=4))
 
 
 

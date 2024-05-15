@@ -26,14 +26,16 @@ class GraphInstance:
         # Define lambda functions for weight assignments based on the specified weight type
         if self.weight_type == "uniform":
             weights = [random.uniform(0, 1) for _ in self.G.edges()]
+        elif self.weight_type == "uniform_plus":
+            weights = [random.uniform(-1, 1) for _ in self.G.edges()]
         elif self.weight_type == "normal":
             weights = [random.normalvariate(0, 1) for _ in self.G.edges()]
         elif self.weight_type == "exponential":
-            weights = [random.expovariate(1) for _ in self.G.edges()]
+            weights = [random.expovariate(0.2) for _ in self.G.edges()]
         elif self.weight_type == "log-normal":
             weights = [random.lognormvariate(0, 1) for _ in self.G.edges()]
-        elif self.weight_type == "binomial":
-            weights = [np.random.binomial(10, 0.5) for _ in self.G.edges()]
+        elif self.weight_type == "cauchy":
+            weights = [np.random.standard_cauchy() for _ in self.G.edges()]
         elif self.weight_type == "power-law":
             weights = [np.random.power(5) for _ in self.G.edges()]
         else:

@@ -10,6 +10,7 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
+    git \
     g++ \
     build-essential \
     libffi-dev \
@@ -43,5 +44,7 @@ RUN pip install -r requirements-isa.txt
 EXPOSE 8888
 
 # CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=''", "--NotebookApp.password=''"]
-# just run the so i can ssh into the container
+# Can run this and then ssh into container using (+ mounting the volume)
+# docker run -it -p 8888:8888 -v $(pwd):/app <image_id> /bin/bash
+# docker exec -it <container_id> /bin/bash
 CMD ["tail", "-f", "/dev/null"]
