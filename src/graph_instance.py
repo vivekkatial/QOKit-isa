@@ -36,8 +36,6 @@ class GraphInstance:
             weights = [random.lognormvariate(0, 1) for _ in self.G.edges()]
         elif self.weight_type == "cauchy":
             weights = [np.random.standard_cauchy() for _ in self.G.edges()]
-        elif self.weight_type == "power-law":
-            weights = [np.random.power(5) for _ in self.G.edges()]
         else:
             # make all weights the same
             weights = [1 for _ in self.G.edges()]
