@@ -29,7 +29,7 @@ logging.basicConfig(level=logging.INFO)
 start_time = time.time()
 
 # Constants
-LAYER_INDEPENDENT_METHODS = ['random', 'fixed_angles_constant', 'tqa']
+LAYER_INDEPENDENT_METHODS = ['qibpi', 'three_regular', 'random', 'fixed_angles_constant', 'tqa']
 LAYER_DEPENDENT_METHODS = ['interp', 'fourier']
 
 def create_graph():
@@ -104,8 +104,7 @@ def main():
     # If tracking is enabled, start the MLflow run
     if TRACK:
         # Set experiment name to be INFORMS 2024 IJOC 
-        # mlflow.set_experiment("QAOA-Parameter-Initialisation")
-        mlflow.set_experiment("QAOA-QIBPI-Instances")
+        mlflow.set_experiment("QAOA-Parameter-Initialisation")
         mlflow.start_run(run_name=f"{GRAPH_TYPE} Graph")
         mlflow.log_params(graph_features)
         mlflow.log_params(weighted_features)
@@ -115,7 +114,7 @@ def main():
         mlflow.log_param("max_layers", N_LAYERS)
 
 
-    init_class = Initialisation(num_qubits=NUM_NODES, max_layers=N_LAYERS, source=GRAPH_TYPE)
+    init_class = Initialisation(num_qubits=NUM_NODES, max_layers=N_LAYERS, source=GRAPH_TYPE, weight_type=WEIGHT_TYPE)
     
     results = {}
     evaluations = {}

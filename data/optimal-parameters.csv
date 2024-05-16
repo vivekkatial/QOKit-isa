@@ -1,4 +1,4 @@
-Source,params.n_layers,median_beta_1,median_gamma_1,median_beta_2,median_gamma_2,median_beta_3,median_gamma_3,median_beta_4,median_gamma_4,median_beta_5,median_gamma_5
+graph_type,params.n_layers,median_beta_1,median_gamma_1,median_beta_2,median_gamma_2,median_beta_3,median_gamma_3,median_beta_4,median_gamma_4,median_beta_5,median_gamma_5
 four_regular_graph,1,-0.29860571376910267,-0.45574248704263226,NA,NA,NA,NA,NA,NA,NA,NA
 geometric,1,0.2180528947870259,-0.22904083607536327,NA,NA,NA,NA,NA,NA,NA,NA
 nearly_complete_bi_partite,1,-0.3366149492831807,0.41031935436508143,NA,NA,NA,NA,NA,NA,NA,NA

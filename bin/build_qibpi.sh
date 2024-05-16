@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the array of graph types
-declare -a graph_types=("Geometric")
+declare -a graph_types=("Nearly Complete BiPartite" "Uniform Random" "Power Law Tree" "Watts-Strogatz small world" "3-Regular Graph" "4-Regular Graph" "Geometric")
 
 # Define the array of weight types including None
 declare -a weight_types=("uniform" "uniform_plus" "normal" "exponential" "log-normal" "cauchy" "None")

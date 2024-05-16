@@ -6,11 +6,11 @@ import pandas as pd
 from utils import to_snake_case
 
 # Load the optimal parameters DataFrame from the csv file
-optimal_parameters_df = pd.read_csv('data/optimal-parameters.csv')
+optimal_parameters_df = pd.read_csv('data/qibpi_data.csv')
 
 # Define the Initialisation class
 class Initialisation:
-    def __init__(self, num_qubits, max_layers, random_seed=None, source=None):
+    def __init__(self, num_qubits, max_layers, random_seed=None, source=None, weight_type=None):
         self.num_qubits = num_qubits
         self.max_layers = max_layers
         self.current_layer = 1
@@ -18,6 +18,7 @@ class Initialisation:
         self.parameter_history = []
         self.last_parameters = None
         self.source = to_snake_case(source)
+        self.weight_type = weight_type
         self.allowed_sources = [
             "four_regular_graph",
             "geometric",
@@ -58,17 +59,24 @@ class Initialisation:
         if self.current_layer < self.max_layers:
             self.current_layer += 1
 
-    def qibpi_init(self):
+    def qibpi_init(self, source=None):
         if self.optimal_parameters_df is None:
             return "No data available."
         
         df = self.optimal_parameters_df
+        effective_source = source if source is not None else self.source
 
-        filtered_df = df[(df['Source'] == self.source) & (df['params.n_layers'] == self.current_layer)]
+        if self.weight_type == 'None':
+            # Filter for weight_type is NaN
+            filtered_df = df[(df['graph_type'] == effective_source) & (df['layer'] == self.current_layer) & (df['weight_type'].isnull())]
+        else:
+            # Filter for weight_type is not NaN
+            filtered_df = df[(df['graph_type'] == effective_source) & (df['layer'] == self.current_layer) & (df['weight_type'] == self.weight_type)]
+        
         if not filtered_df.empty:
             beta_values = []
             gamma_values = []
-            for i in range(1, self.current_layer + 1):
+            for i in range(0, self.current_layer):
                 beta_key = f'median_beta_{i}'
                 gamma_key = f'median_gamma_{i}'
                 beta_values.append(filtered_df.iloc[0][beta_key])
@@ -82,6 +90,10 @@ class Initialisation:
             return params
         else:
             raise ValueError("No data available for the specified source and number of layers.")
+
+    def three_regular_init(self):
+        return self.qibpi_init(source="three_regular_graph")
+
         
     def tqa_init(self, evolution_time=5):
         """
@@ -96,9 +108,9 @@ class Initialisation:
             np.array: Array of initial QAOA parameters (gamma and beta values).
         """
 
-        # If the first layer, initialize using QIBPI
+        # If the first layer, initialize using random
         if self.current_layer == 1:
-            return self.qibpi_init()
+            return self.random_init()
 
         # Number of layers
         p = self.current_layer
@@ -120,7 +132,7 @@ class Initialisation:
         """
         if self.current_layer == 1:
             # Initialise using QIBPI if no parameters are set yet
-            return self.qibpi_init()
+            return self.random_init()
         
         p = len(self.last_parameters) // 2  # Current number of layers, assuming gamma and beta are equally split
         last_gamma = self.last_parameters[:p]
@@ -150,7 +162,7 @@ class Initialisation:
         """
         if self.current_layer == 1:
             # Handle the base case where no parameters are set yet
-            return self.qibpi_init()
+            return self.random_init()
         
         # Convert to Fourier space and back to the real space with the new dimension
         fourier_point = self.convert_to_fourier_point(point = self.last_parameters, num_params_in_fourier_point= 2 * (self.current_layer - 1))
@@ -161,26 +173,6 @@ class Initialisation:
 
         return new_initial_parameters
     
-    def init_params_for_layer(self, init_type, df=None):
-        """
-        Initialize parameters for the current layer based on the specified type.
-        """
-        if init_type == "random":
-            return self.random_init()
-        elif init_type == "fixed_angles_constant":
-            return self.fixed_angles_constant_init()
-        elif init_type == "tqa":
-            return self.tqa_init()
-        elif init_type == "qibpi":
-            return self.qibpi_init()
-        elif init_type == "interp":
-            return self.interp_init()
-        elif init_type == "fourier":
-            return self.fourier_init()
-        else:
-            raise ValueError("Unknown initialization type specified.")
-
-
 
     def convert_to_fourier_point(self, point, num_params_in_fourier_point):
         """Converts a point to fourier space.
@@ -236,3 +228,24 @@ class Initialisation:
                     (k + 0.5) * (i + 0.5) * math.pi / reps
                 )
         return new_point
+    
+    def init_params_for_layer(self, init_type, df=None):
+        """
+        Initialize parameters for the current layer based on the specified type.
+        """
+        if init_type == "random":
+            return self.random_init()
+        elif init_type == "fixed_angles_constant":
+            return self.fixed_angles_constant_init()
+        elif init_type == "tqa":
+            return self.tqa_init()
+        elif init_type == "qibpi":
+            return self.qibpi_init()
+        elif init_type == "three_regular":
+            return self.three_regular_init()
+        elif init_type == "interp":
+            return self.interp_init()
+        elif init_type == "fourier":
+            return self.fourier_init()
+        else:
+            raise ValueError("Unknown initialization type specified.")
