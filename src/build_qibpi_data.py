@@ -11,16 +11,17 @@ logger = logging.getLogger(__name__)
 def main():
     try:
         # Connect to MLFlow experiment
-        mlflow.set_experiment("QAOA-QIBPI-Generator")
-        logger.info("Connected to MLFlow experiment: QAOA-QIBPI-Generator")
+        EXPERIMENT_NAME = "QAOA-QIBPI-Instances"
+        mlflow.set_experiment(EXPERIMENT_NAME)
+        logger.info(f"Connected to MLFlow experiment: {EXPERIMENT_NAME}")
 
         # Initialize MLflow client
         client = MlflowClient()
 
         # Retrieve the experiment ID
-        experiment = client.get_experiment_by_name('QAOA-QIBPI-Generator')
+        experiment = client.get_experiment_by_name(EXPERIMENT_NAME)
         if not experiment:
-            logger.error("Experiment 'QAOA-QIBPI-Generator' not found.")
+            logger.error(f"Experiment '{EXPERIMENT_NAME}' not found.")
             return
 
         experiment_id = experiment.experiment_id
@@ -33,7 +34,6 @@ def main():
         )
 
         all_params = []
-
         for run in runs:
             data = run.data
             # Skip runs with no metrics
@@ -99,6 +99,13 @@ def main():
         # Display the final flattened DataFrame
         logger.info("Final flattened DataFrame:")
         logger.info(flat_df)
+        
+
+        # Log how many of each graph type and weight type were found
+        graph_type_counts = df[['graph_type', 'weight_type']].value_counts()
+        logger.info("Graph type and weight type counts:")
+        logger.info(graph_type_counts)
+
 
         # Write to csv file
         flat_df.to_csv("data/qibpi_data.csv", index=False)

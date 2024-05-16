@@ -20,7 +20,7 @@ from graph_instance import create_graphs_from_all_sources
 from initialisation import Initialisation
 from features import get_graph_features, get_weighted_graph_features
 from visualizations import plot_approximation_ratio, plot_facet_approximation_ratio, plot_graph_with_weights, plot_edge_weights_histogram
-from utils import make_temp_directory, str2bool
+from utils import make_temp_directory, str2bool, convert_list_attributes_to_string
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -188,7 +188,6 @@ def main():
     
     logging.info(f"Metrics: {metrics}")
 
-    
     ## Create plots
     with make_temp_directory() as temp_dir:
         # Plot approximation ratio
@@ -211,6 +210,8 @@ def main():
         if plt4 is not None:
             plt4.savefig(f'{temp_dir}/edge_weights_histogram.png', dpi=300)
             plt4.clf()
+
+        convert_list_attributes_to_string(G)
 
         # Save networkx graph as a GraphML file
         nx.write_graphml(G, f'{temp_dir}/graph.graphml')

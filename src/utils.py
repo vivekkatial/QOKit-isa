@@ -106,3 +106,14 @@ def find_instance_class(file_name):
         if instance_class in file_name:
             return instance_class
     return "No matching instance class found"
+
+def convert_list_attributes_to_string(G):
+    for node, data in G.nodes(data=True):
+        for key, value in data.items():
+            if isinstance(value, list):
+                G.nodes[node][key] = str(value)
+    
+    for u, v, data in G.edges(data=True):
+        for key, value in data.items():
+            if isinstance(value, list):
+                G.edges[u, v][key] = str(value)
