@@ -21,7 +21,7 @@ for num_nodes in "${node_counts[@]}"; do
             for weight_type in "${weight_types[@]}"; do
                 # Submit the Slurm job for each combination with logging
                 echo "Run $i: Submitting job for graph type: $graph_type, weight type: $weight_type, num_nodes: $num_nodes"
-                sbatch --output=logs/run-$num_nodes-$i-%x-%j-%N.out run_maxcut_instance.slurm "$graph_type" "$weight_type" "$num_nodes"
+                sbatch --output=logs/run-$num_nodes-$i-%x-%j-%N.out bin/run_maxcut_instance.slurm "$graph_type" "$weight_type" "$num_nodes"
             done
         done
     done
