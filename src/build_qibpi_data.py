@@ -4,8 +4,6 @@ import numpy as np
 import pandas as pd
 import logging
 
-from utils import to_snake_case
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -36,6 +34,7 @@ def main():
         )
 
         all_params = []
+
         for run in runs:
             data = run.data
             # Skip runs with no metrics
@@ -61,7 +60,7 @@ def main():
                 **params_beta,
                 **params_gamma,
                 'uuid': run.info.run_id,
-                'graph_type': to_snake_case(data.params.get('graph_type')),
+                'graph_type': data.params.get('graph_type'),
                 'weight_type': data.params.get('weight_type'),
             }
             # Append the combined dictionary to the list
