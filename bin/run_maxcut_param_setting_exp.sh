@@ -7,10 +7,10 @@ declare -a graph_types=("Nearly Complete BiPartite" "Uniform Random" "Power Law 
 declare -a weight_types=("uniform" "uniform_plus" "normal" "exponential" "log-normal" "cauchy" "None")
 
 # Define the array of num_nodes
-declare -a node_counts=(10 12 14 16 20)
+declare -a node_counts=(9 11 13)
 
 # Define the number of repetitions per node size
-declare -i num_repeats=100
+declare -i num_repeats=30
 
 # Loop over each node count
 for num_nodes in "${node_counts[@]}"; do
