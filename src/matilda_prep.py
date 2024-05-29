@@ -5,7 +5,7 @@ import pytest
 # Hide pandas warnings
 pd.options.mode.chained_assignment = None
 
-def load_and_process_data(file_path, source_type='graph_weight'):
+def load_and_process_data(file_path, source_type='graph_weight', feature_filter=False):
     """
     Load and process the CSV file.
     
@@ -47,6 +47,9 @@ def load_and_process_data(file_path, source_type='graph_weight'):
     # Handle NaN in weight_type
     selected_df['feature_weight_type'] = selected_df['feature_weight_type'].fillna('None')
 
+    # Filter out rows with 'feature_weight_type' equal to 'None'
+    selected_df = selected_df[selected_df['feature_weight_type'] != 'None']
+
     # Create the 'Source' column based on the source_type parameter
     if source_type == 'graph_weight':
         selected_df['Source'] = selected_df['feature_graph_type'] + ' ' + selected_df['feature_weight_type']
@@ -61,6 +64,40 @@ def load_and_process_data(file_path, source_type='graph_weight'):
 
     # Remove the original 'feature_weight_type' and 'feature_graph_type' columns
     selected_df.drop(columns=['feature_weight_type', 'feature_graph_type'], inplace=True)
+
+    # Feature filtering (remove non-weight related columns)
+    if feature_filter:
+        
+        features = [
+            # Weighted features
+            "feature_maximum_weighted_degree",
+            "feature_max_weight",
+            "feature_mean_weight",
+            "feature_median_weight",
+            "feature_minimum_weighted_degree",
+            "feature_min_weight",
+            "feature_range_weight",
+            "feature_skewness_weight",
+            "feature_std_dev_weight",
+            "feature_variance_weight",
+            "feature_weighted_average_clustering",
+            "feature_weighted_average_shortest_path_length",
+            "feature_weighted_diameter",
+            "feature_weighted_radius",
+            
+            # Laplacian features
+            "feature_laplacian_largest_eigenvalue",
+            "feature_laplacian_second_largest_eigenvalue",
+            "feature_ratio_of_two_largest_laplacian_eigenvaleus",
+            
+            # Symmetry-related features
+            "feature_number_of_orbits",
+            "feature_group_size",
+            "feature_is_distance_regular",
+            "feature_regular"
+        ]
+
+        selected_df = selected_df[['run_id', 'Source'] + algo_cols + features]
 
     # Check for missing values
     missing_values = selected_df.isnull().any(axis=1).sum()
@@ -130,15 +167,15 @@ def test_only_numeric_features():
     assert len(non_numeric_cols) == 0, f"Non-numeric columns: {', '.join(non_numeric_cols)}"
 
 ## Load and process the data
-d_matilda = load_and_process_data("data/initialisation_results-10-nodes.csv")
+d_matilda = load_and_process_data("data/initialisation_results_nodes-12.csv")
 
 if __name__ == "__main__":
-    file_path = "data/initialisation_results-10-nodes.csv"
-    source_types = ['graph_weight', 'graph', 'weight', 'weighted_unweighted']
+    file_path = "data/initialisation_results_nodes-12.csv"
+    source_types = ['graph_weight', 'graph', 'weight']
     
     for source_type in source_types:
-        d_matilda = load_and_process_data(file_path, source_type)
-        output_file = f"data/matilda_processed_{source_type}.csv"
+        d_matilda = load_and_process_data(file_path, source_type, feature_filter=False)
+        output_file = f"data/12-nodes/matilda_processed_{source_type}.csv"
         
         # Write to csv file
         d_matilda.to_csv(output_file, index=False)
@@ -147,6 +184,8 @@ if __name__ == "__main__":
         print(f"Processed data for source type '{source_type}':")
         print(d_matilda.head())
         print(d_matilda.info())
+        # Print the source distribution
+        print(d_matilda['Source'].value_counts())
         print(f"Writing to {output_file}...")
         
     pytest.main([__file__])

@@ -32,4 +32,4 @@ apptainer exec \
     --graph_type "$1" \
     --num_nodes 8 \
     --weight_type "$2" \
-    --n_layers 15
+    --n_layers 3

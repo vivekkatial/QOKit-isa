@@ -15,7 +15,7 @@ def main():
     try:
         # Connect to MLFlow experiment
         EXPERIMENT_NAME = "QAOA-Parameter-Initialisation"
-        NUM_NODES = 10
+        NUM_NODES = 12
         graph_types = [
             "Nearly Complete BiPartite",
             "Uniform Random",
@@ -85,8 +85,8 @@ def main():
 
         if all_runs:
             d_results = pd.concat(all_runs, ignore_index=True)
-            d_results.to_csv("data/initialisation_results.csv", index=False)
-            logging.info(f"Saved {len(d_results)} runs to data/initialisation_results.csv")
+            d_results.to_csv(f"data/initialisation_results_nodes-{NUM_NODES}.csv", index=False)
+            logging.info(f"Saved {len(d_results)} runs to data/initialisation_results_nodes-{NUM_NODES}.csv")
         else:
             logging.info("No runs found for the specified parameters.")
 
