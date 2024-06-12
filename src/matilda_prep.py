@@ -49,6 +49,8 @@ def load_and_process_data(file_path, source_type='graph_weight', feature_filter=
 
     # Filter out rows with 'feature_weight_type' equal to 'None'
     selected_df = selected_df[selected_df['feature_weight_type'] != 'None']
+    
+    # selected_df = selected_df[selected_df['feature_weight_type'] == 'None']
 
     # Create the 'Source' column based on the source_type parameter
     if source_type == 'graph_weight':
@@ -171,11 +173,10 @@ d_matilda = load_and_process_data("data/initialisation_results_nodes-12.csv")
 
 if __name__ == "__main__":
     file_path = "data/initialisation_results_nodes-12.csv"
-    source_types = ['graph_weight', 'graph', 'weight']
-    
+    source_types = ['graph_weight', 'graph', 'weight', 'weighted_unweighted']
     for source_type in source_types:
         d_matilda = load_and_process_data(file_path, source_type, feature_filter=False)
-        output_file = f"data/12-nodes/matilda_processed_{source_type}.csv"
+        output_file = f"data/12-nodes/matilda_processed_{source_type}-weight-only.csv"
         
         # Write to csv file
         d_matilda.to_csv(output_file, index=False)

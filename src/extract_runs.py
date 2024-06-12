@@ -15,7 +15,7 @@ def main():
     try:
         # Connect to MLFlow experiment
         EXPERIMENT_NAME = "QAOA-Parameter-Initialisation"
-        NUM_NODES = 12
+        NUM_NODES = 11
         graph_types = [
             "Nearly Complete BiPartite",
             "Uniform Random",
