@@ -91,7 +91,33 @@ def run_qaoa(G, init_class, method, layer):
 
 def main():
     logging.info("Starting QAOA with different initialization methods")
-    G = create_graph()
+
+    print(f"Custom Graph: {CUSTOM_GRAPH}")
+
+    if not CUSTOM_GRAPH:
+        G = create_graph()
+    else:
+        # Read the graph from the custom
+        logging.info(f"Reading graph from {CUSTOM_GRAPH}")
+        G = nx.read_graphml(CUSTOM_GRAPH)
+        # Convert the edges to integers
+        G = nx.convert_node_labels_to_integers(G)
+        # Get the source from the graph attributes
+        GRAPH_TYPE = G.graph['instance_class']
+        if GRAPH_TYPE == "nearly_complete_bipartite":
+            GRAPH_TYPE = "nearly_complete_bi_partite"
+        # Get the weight type from the graph attributes
+        WEIGHT_TYPE = G.graph['weight_type']
+        # Get the number of nodes from the graph attributes
+        NUM_NODES = G.number_of_nodes()
+
+    # Print global variables
+    logging.info(f"Graph Type: {GRAPH_TYPE}")
+    logging.info(f"Number of Nodes: {NUM_NODES}")
+    logging.info(f"Weight Type: {WEIGHT_TYPE}")
+    logging.info(f"Max Layers: {N_LAYERS}")
+    
+
     graph_features = get_graph_features(G)
     weighted_features = get_weighted_graph_features(G)
     # Log the graph features and format the output as a json
@@ -267,7 +293,9 @@ if __name__ == "__main__":
     parser.add_argument("--graph_type", type=str, default="Uniform Random", help="The type of graph to generate")
     parser.add_argument("--num_nodes", type=int, default=8, help="The number of nodes in the graph")
     parser.add_argument("--weight_type", type=str, default=None, help="The type of weights to allocate to the edges")
-    parser.add_argument("--n_layers", type=int, default=3, help="The maximum number of layers to run QAOA")
+    parser.add_argument("--n_layers", type=int, default=15, help="The maximum number of layers to run QAOA")
+    # Add argument for a custom_graph file
+    parser.add_argument("--custom_graph", type=str, default=None, help="Path to a custom graph file")
 
     args = parser.parse_args()
     GRAPH_TYPE = args.graph_type
@@ -275,6 +303,7 @@ if __name__ == "__main__":
     WEIGHT_TYPE = args.weight_type
     N_LAYERS = args.n_layers
     TRACK = args.track
+    CUSTOM_GRAPH = args.custom_graph
 
     main()
     # End the timer

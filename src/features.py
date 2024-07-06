@@ -20,8 +20,7 @@ def get_graph_features(G):
     features = {}
 
     L = nx.laplacian_matrix(G, weight="cost")
-    # L  doesn't work for what we're triyng to do here (so e will not either)
-    e = np.linalg.eigvals(L.A)
+    e = np.linalg.eigvals(L.toarray())
 
     features["acyclic"] = nx.is_directed_acyclic_graph(G)
     features[
@@ -81,7 +80,7 @@ def get_graph_features(G):
 
     # Additional features based on (https://arxiv.org/pdf/2102.05997.pdf)
     # First we need to make a Nauty graph to leverage `pynauty`
-    adj_dict = {node: list(neighbors) for node, neighbors in G.adjacency()}
+    adj_dict = {int(node): [int(neighbor) for neighbor in neighbors] for node, neighbors in G.adjacency()}
     G_pynauty = nauty.Graph(
         number_of_vertices=G.number_of_nodes(), directed=False, adjacency_dict=adj_dict
     )
@@ -92,10 +91,9 @@ def get_graph_features(G):
     features["group_size"] = calculate_group_size(G_pynauty)  # Based on PyNauty
     features["number_of_orbits"] = nauty_feats[-1]  # Based on PyNauty
     features["is_distance_regular"] = nx.is_distance_regular(G)
-    features["entropy"] = get_shannon_entropy(G)
+    features["entropy"] = get_shannon_entropy(G, adj_dict)
 
     return features
-
 def get_weighted_graph_features(G):
     """
     Generates a list of weight-related features for the given connected weighted graph.
@@ -224,14 +222,13 @@ def calculate_group_size(G):
 
 from collections import defaultdict, Counter
 
-def get_shannon_entropy(G):
+def get_shannon_entropy(G, adjacency_dict):
     """ Calculate the Shannon entropy of the graph G using the implementation in
     https://arxiv.org/pdf/2012.04713
 
     Parameters:
     G (networkx.Graph): A networkx graph.
     """
-    adjacency_dict = {node: list(neighbors) for node, neighbors in G.adjacency()}
 
     g = nauty.Graph(number_of_vertices=G.number_of_nodes(), directed=nx.is_directed(G),
                 adjacency_dict = adjacency_dict)
@@ -240,4 +237,3 @@ def get_shannon_entropy(G):
     for orbit, orbit_size in Counter(aut[3]).items():
         S += ((orbit_size * np.log(orbit_size)) / G.number_of_nodes())
     return S
-

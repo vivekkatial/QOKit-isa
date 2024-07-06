@@ -89,7 +89,9 @@ class Initialisation:
 
             return params
         else:
-            raise ValueError("No data available for the specified source and number of layers.")
+            # Update the error message to include the source, weight_type and number of layers 
+            raise ValueError(f"No optimal parameters found for source: {effective_source}, weight_type: {self.weight_type}, and number of layers: {self.current_layer}.")
+            
 
     def three_regular_init(self):
         return self.qibpi_init(source="three_regular_graph")
