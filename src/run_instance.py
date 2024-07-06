@@ -138,6 +138,10 @@ def main():
         mlflow.log_param("graph_type", GRAPH_TYPE)
         mlflow.log_param("weight_type", WEIGHT_TYPE)
         mlflow.log_param("max_layers", N_LAYERS)
+        # if custom graph is used, log the path
+        if CUSTOM_GRAPH:
+            mlflow.log_param("custom_graph", CUSTOM_GRAPH)
+            mlflow.log_param("evolved_instance", True)
 
 
     init_class = Initialisation(num_qubits=NUM_NODES, max_layers=N_LAYERS, source=GRAPH_TYPE, weight_type=WEIGHT_TYPE)
