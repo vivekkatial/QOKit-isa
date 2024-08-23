@@ -5,7 +5,7 @@ import pytest
 # Hide pandas warnings
 pd.options.mode.chained_assignment = None
 
-def load_and_process_data(file_path, source_type='graph_weight', feature_filter=False):
+def load_and_process_data(file_path, source_type='graph_weight', feature_filter=False, **kwargs):
     """
     Load and process the CSV file.
     
@@ -21,10 +21,40 @@ def load_and_process_data(file_path, source_type='graph_weight', feature_filter=
     # Select all algo_ columns
     algo_cols = [col for col in df.columns if col.startswith('algo_')]
 
+    # Check if `evolved` is in **kwargs
+    if 'evolved' in kwargs:
+        print(f"Filtering for evolved_instance = {kwargs['evolved']}")
+
+        # Read in the original data
+        # Check kwargs for `original_file_path`
+        if 'original_file_path' in kwargs:
+            original_file_path = kwargs['original_file_path']
+            original_df = pd.read_csv(original_file_path)
+            # Update the graph_type column in the evolved data to include `(Evolved)`
+            if source_type == 'graph':
+                df['graph_type'] = df['graph_type'] + ' (Evolved)'
+                df['graph_type'] = 'Evolved'
+            elif source_type == 'weight':
+                df['weight_type'] = df['weight_type'] + ' (Evolved)'
+                df['weight_type'] = 'Evolved'
+            else:
+                raise ValueError("Invalid source_type. Choose from 'graph', 'weight'.")
+            # Concat the original_df and df
+            df = pd.concat([original_df, df], ignore_index=True)
+            #
+        else:
+            raise ValueError("original_file_path not found in kwargs.")
+
+    # Drop the evolved_instance column and the custom_graph column
+    df.drop(columns=['evolved_instance', 'custom_graph'], inplace=True)
+
     # Select all columns from 'acyclic' to 'weight_type'
     start_idx = df.columns.get_loc('acyclic')
     end_idx = df.columns.get_loc('weight_type') + 1
     range_cols = df.columns[start_idx:end_idx]
+
+    
+    
 
     # Select run_id column
     run_id_col = ['run_id']
@@ -105,13 +135,13 @@ def load_and_process_data(file_path, source_type='graph_weight', feature_filter=
     missing_values = selected_df.isnull().any(axis=1).sum()
     print(f"Missing values: {missing_values}/{selected_df.shape[0]} ({missing_values / selected_df.shape[0]:.2%})")
 
-    # Check for columns that have no-variance (i.e., all values are the same) and remove them
-    no_variance_cols = selected_df.columns[selected_df.nunique() == 1]
-    print(f"No-variance columns: {no_variance_cols}")
-    selected_df.drop(columns=no_variance_cols, inplace=True)
-
     # Filter rows with any missing values
     selected_df = selected_df.dropna()
+
+    # Check for columns that have no-variance (i.e., all values are the same) and remove them
+    no_variance_cols = selected_df.columns[selected_df.apply(lambda x: x.nunique()) == 1]
+    print(f"No-variance columns: {no_variance_cols}")
+    selected_df.drop(columns=no_variance_cols, inplace=True)
 
     # Convert all boolean columns to integers
     bool_cols = selected_df.select_dtypes(include=bool).columns
@@ -145,7 +175,7 @@ def test_unique_instances():
 
 def test_feature_variance():
     feature_cols = d_matilda.filter(like='feature_')
-    no_variance_cols = feature_cols.columns[feature_cols.nunique() == 1]
+    no_variance_cols = feature_cols.columns[feature_cols.apply(lambda x: x.nunique()) == 1]
     assert len(no_variance_cols) == 0, "There are feature columns with no variance"
 
 def test_at_least_one_source():
@@ -169,14 +199,26 @@ def test_only_numeric_features():
     assert len(non_numeric_cols) == 0, f"Non-numeric columns: {', '.join(non_numeric_cols)}"
 
 ## Load and process the data
-d_matilda = load_and_process_data("data/initialisation_results_nodes-12.csv")
+d_matilda = load_and_process_data(
+            "data/initialisation_results_nodes-12-evolved.csv", 
+            source_type="graph",
+            evolved=True,
+            original_file_path="data/initialisation_results_nodes-12.csv",
+            feature_filter=False
+        )
 
 if __name__ == "__main__":
-    file_path = "data/initialisation_results_nodes-12.csv"
-    source_types = ['graph_weight', 'graph', 'weight', 'weighted_unweighted']
+    file_path = "data/initialisation_results_nodes-12-evolved.csv"
+    source_types = ['weight']
     for source_type in source_types:
-        d_matilda = load_and_process_data(file_path, source_type, feature_filter=False)
-        output_file = f"data/12-nodes/matilda_processed_{source_type}-weight-only.csv"
+        d_matilda = load_and_process_data(
+            "data/initialisation_results_nodes-12-evolved.csv", 
+            source_type=source_type,
+            evolved=True,
+            original_file_path="data/initialisation_results_nodes-12.csv",
+            feature_filter=False
+        )
+        output_file = f"data/12-nodes/matilda_processed_{source_type}.csv"
         
         # Write to csv file
         d_matilda.to_csv(output_file, index=False)
@@ -188,5 +230,6 @@ if __name__ == "__main__":
         # Print the source distribution
         print(d_matilda['Source'].value_counts())
         print(f"Writing to {output_file}...")
+
         
     pytest.main([__file__])

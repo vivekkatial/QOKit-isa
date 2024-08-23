@@ -10,6 +10,7 @@ import tempfile
 import shutil
 import re
 import boto3
+import os
 from botocore.exceptions import NoCredentialsError
 
 
@@ -54,13 +55,19 @@ def str2bool(v):
 
 
 @contextlib.contextmanager
-def make_temp_directory():
-    """Make temp directory"""
-    temp_dir = tempfile.mkdtemp()
+def make_temp_directory(local=False):
+    """Make temp directory, optionally locally"""
+    if local:
+        temp_dir = os.path.join(os.getcwd(), 'tmp')
+        os.makedirs(temp_dir, exist_ok=True)
+    else:
+        temp_dir = tempfile.mkdtemp()
     try:
         yield temp_dir
     finally:
-        shutil.rmtree(temp_dir)
+        # Dont delete if local
+        if not local:
+            shutil.rmtree(temp_dir)
 
 
 def clean_parameters_for_logging(algo_result, **kwargs):

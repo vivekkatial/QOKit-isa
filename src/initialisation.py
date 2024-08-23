@@ -66,7 +66,7 @@ class Initialisation:
         df = self.optimal_parameters_df
         effective_source = source if source is not None else self.source
 
-        if self.weight_type == 'None':
+        if self.weight_type == 'None' or self.weight_type is None:
             # Filter for weight_type is NaN
             filtered_df = df[(df['graph_type'] == effective_source) & (df['layer'] == self.current_layer) & (df['weight_type'].isnull())]
         else:
@@ -90,6 +90,7 @@ class Initialisation:
             return params
         else:
             # Update the error message to include the source, weight_type and number of layers 
+            breakpoint()
             raise ValueError(f"No optimal parameters found for source: {effective_source}, weight_type: {self.weight_type}, and number of layers: {self.current_layer}.")
             
 

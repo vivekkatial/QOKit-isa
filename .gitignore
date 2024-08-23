@@ -160,3 +160,5 @@ cython_debug/
 .vscode/settings.json
 **.DS_Store
 **.png
+data/12-nodes/*
+data/12-nodes/**
