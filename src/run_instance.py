@@ -29,8 +29,9 @@ logging.basicConfig(level=logging.INFO)
 start_time = time.time()
 
 # Constants
-LAYER_INDEPENDENT_METHODS = ['qibpi', 'three_regular', 'random', 'fixed_angles_constant', 'tqa']
-LAYER_DEPENDENT_METHODS = ['interp', 'fourier']
+LAYER_INDEPENDENT_METHODS = ['random']
+LAYER_DEPENDENT_METHODS = []
+# LAYER_DEPENDENT_METHODS = ['interp', 'fourier']
 
 def create_graph():
     """Generate and return a connected graph instance."""
@@ -89,8 +90,17 @@ def run_qaoa(G, init_class, method, layer):
 
     return approximation_ratio, evals
 
-def main():
+def main(**kwargs):
     logging.info("Starting QAOA with different initialization methods")
+    
+    # Unpack kwargs
+    GRAPH_TYPE = kwargs.get("graph_type")
+    NUM_NODES = kwargs.get("num_nodes")
+    WEIGHT_TYPE = kwargs.get("weight_type")
+    N_LAYERS = kwargs.get("n_layers")
+    TRACK = kwargs.get("track")
+    CUSTOM_GRAPH = kwargs.get("custom_graph")
+    
 
     print(f"Custom Graph: {CUSTOM_GRAPH}")
 
@@ -149,18 +159,19 @@ def main():
     results = {}
     evaluations = {}
     # Run QAOA for non-layer dependent methods at maximum layer only
-    for method in LAYER_INDEPENDENT_METHODS:
-        approximation_ratio, evals = run_qaoa(G, init_class, method, N_LAYERS)
-        results[method] = approximation_ratio
-        evaluations[method] = evals
+    if len(LAYER_INDEPENDENT_METHODS) > 0:
+        for method in LAYER_INDEPENDENT_METHODS:
+            approximation_ratio, evals = run_qaoa(G, init_class, method, N_LAYERS)
+            results[method] = approximation_ratio
+            evaluations[method] = evals
 
-    # Run QAOA for layer-dependent methods at each layer
-    for method in LAYER_DEPENDENT_METHODS:
-        for layer in range(1, N_LAYERS + 1):
-            key = f"{method}_p{layer}"
-            approximation_ratio, evals = run_qaoa(G, init_class, method, layer)            
-            results[key] = approximation_ratio
-            evaluations[key] = evals            
+    if len(LAYER_DEPENDENT_METHODS) > 0:
+        for method in LAYER_DEPENDENT_METHODS:
+            for layer in range(1, N_LAYERS + 1):
+                key = f"{method}_p{layer}"
+                approximation_ratio, evals = run_qaoa(G, init_class, method, layer)            
+                results[key] = approximation_ratio
+                evaluations[key] = evals
 
     sorted_results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1], reverse=True)}
     logging.info("Results:")
@@ -309,7 +320,14 @@ if __name__ == "__main__":
     TRACK = args.track
     CUSTOM_GRAPH = args.custom_graph
 
-    main()
+    main(
+        graph_type = GRAPH_TYPE,
+        num_nodes = NUM_NODES,
+        weight_type = WEIGHT_TYPE,
+        n_layers = N_LAYERS,
+        track = TRACK,
+        custom_graph = CUSTOM_GRAPH
+    )
     # End the timer
     end_time = time.time()
     logging.info(f"Time taken: {end_time - start_time} seconds")

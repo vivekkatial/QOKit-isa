@@ -6,6 +6,7 @@ import networkx as nx
 from functools import partial
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
+import seaborn as sns
 import mlflow
 import argparse
 
@@ -13,9 +14,9 @@ import argparse
 from qokit.qaoa_circuit_maxcut import get_qaoa_circuit
 from qokit.maxcut import maxcut_obj, get_adjacency_matrix
 from qokit.utils import brute_force
-from qokit.qaoa_maxcut_objective import get_qaoa_maxcut_objective
+from qokit.qaoa_objective_maxcut import get_qaoa_maxcut_objective
 
-from graph_instance import create_graphs_from_all_sources
+from graph_instance import create_graphs_from_all_sources, GraphInstance
 from initialisation import Initialisation
 from features import get_graph_features, get_weighted_graph_features
 from visualizations import plot_approximation_ratio, plot_graph_with_weights, plot_edge_weights_histogram
@@ -27,16 +28,61 @@ logging.basicConfig(level=logging.INFO)
 # Start the timer
 start_time = time.time()
 
+def extract_and_save_optimized_parameters(results, evaluations, output_file='optimized_parameters.json'):
+    optimized_parameters = []
+    
+    for layer, data in evaluations.items():
+        # Get the last iteration, which should be the optimized result
+        optimized_result = data['iterations'][-1]
+        
+        # Extract the variables (which contain both gamma and beta)
+        variables = optimized_result['variables']
+        
+        # The number of gamma and beta values is equal to the layer number
+        layer_number = int(layer.split('_')[1])
+        
+        # Split the variables into gamma and beta
+        gamma = variables[:layer_number].tolist()
+        beta = variables[layer_number:].tolist()
+        
+        # Create a dictionary for this layer
+        layer_data = {
+            "layer": layer_number,
+            "gamma": gamma,
+            "beta": beta
+        }
+        
+        optimized_parameters.append(layer_data)
+    
+    # Sort the results by layer number
+    optimized_parameters.sort(key=lambda x: x['layer'])
+    
+    # Save to JSON file
+    with open(output_file, 'w') as f:
+        json.dump(optimized_parameters, f, indent=2)
+    
+    print(f"Optimized parameters saved to {output_file}")
+    
+    return optimized_parameters
+
+
 def create_graph():
     """Generate and return a connected graph instance."""
+    # Generate graph instances
     G_instances = create_graphs_from_all_sources(instance_size=NUM_NODES, sources="ALL")
+    
+    # Filter for the specific graph type
     G_instances = [g for g in G_instances if g.graph_type == GRAPH_TYPE]
+    
+    # Select the first instance (or another based on your criteria)
     graph_instance = G_instances[0]
     
+    # Check if the selected graph instance is connected
     if not nx.is_connected(graph_instance.G):
         print("Generated graph is not connected, generating again.")
-        return create_graph()
+        return create_graph()  # Recursively generate another graph if not connected
     
+    # Allocate weights to the edges if the graph is connected
     graph_instance.weight_type = WEIGHT_TYPE
     graph_instance.allocate_random_weights()
     
@@ -75,12 +121,17 @@ def run_qaoa(G, layer):
     approximation_ratio = -f(res.x) / optimal_cut
     logging.info(f"Approximation ratio at p = {layer}: {approximation_ratio}")
 
-    return approximation_ratio, evals
+    return approximation_ratio, evals, res
 
-def main():
+def main(**kwargs):
     logging.info("Starting QAOA layer exploration")
-
-    print(f"Custom Graph: {CUSTOM_GRAPH}")
+    # Unpack the keyword arguments
+    NUM_NODES = kwargs.get("NUM_NODES", 8)
+    WEIGHT_TYPE = kwargs.get("WEIGHT_TYPE", "uniform")
+    GRAPH_TYPE = kwargs.get("GRAPH_TYPE", "Uniform Random")
+    MAX_LAYERS = kwargs.get("MAX_LAYERS", 2)
+    TRACK = kwargs.get("TRACK", False)
+    CUSTOM_GRAPH = kwargs.get("CUSTOM_GRAPH", None)
 
     if not CUSTOM_GRAPH:
         G = create_graph()
@@ -92,13 +143,27 @@ def main():
         if GRAPH_TYPE == "nearly_complete_bipartite":
             GRAPH_TYPE = "nearly_complete_bi_partite"
         WEIGHT_TYPE = G.graph['weight_type']
+        # Check that there are weights for the edges
+        if not all([G[u][v].get('weight') for u, v in G.edges]):
+            # if not, check if a weight type is specified
+            if not WEIGHT_TYPE:
+                raise ValueError("All edges must have weights and no weight type specified")
+            else:
+                logging.warn(f"Weight type specified: {WEIGHT_TYPE}")
+                logging.warn("Assigning weights to the edges")
+                G_inst = GraphInstance(
+                    G = G,
+                    graph_type = GRAPH_TYPE,
+                    weight_type = WEIGHT_TYPE
+                )
+                G_inst.allocate_random_weights()
+                G = G_inst.G
         NUM_NODES = G.number_of_nodes()
 
-    logging.info(f"Graph Type: {GRAPH_TYPE}")
     logging.info(f"Number of Nodes: {NUM_NODES}")
+    logging.info(f"Graph Type: {GRAPH_TYPE}")
     logging.info(f"Weight Type: {WEIGHT_TYPE}")
     logging.info(f"Max Layers: {MAX_LAYERS}")
-
     graph_features = get_graph_features(G)
     weighted_features = get_weighted_graph_features(G)
     logging.info("Graph Features:")
@@ -121,11 +186,15 @@ def main():
 
     results = {}
     evaluations = {}
+    fevals = {}
     
     for layer in range(1, MAX_LAYERS + 1):
-        approximation_ratio, evals = run_qaoa(G, layer)
+        approximation_ratio, evals, res = run_qaoa(G, layer)
         results[f"layer_{layer}"] = approximation_ratio
         evaluations[f"layer_{layer}"] = evals
+        fevals[f"layer_{layer}"] = res.nfev
+        
+    optimized_parameters = extract_and_save_optimized_parameters(results, evaluations)
 
     sorted_results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1], reverse=True)}
     logging.info("Results:")
@@ -150,10 +219,29 @@ def main():
     best_layer = df.groupby('layer')['approximation_ratio'].max().idxmax()
     logging.info(f"Best layer: {best_layer}")
     best_approximation_ratio = df[df['layer'] == best_layer]['approximation_ratio'].max()
+    
+    acceptable_ratio = 0.99 * best_approximation_ratio
+    metrics = {}
+    for layer in range(1, MAX_LAYERS + 1):
+        layer_df = df[df['layer'] == layer]
+        num_evals = layer_df[layer_df['approximation_ratio'] >= acceptable_ratio]['num_evals'].min()
 
-    with make_temp_directory() as temp_dir:
+        if pd.isna(num_evals):
+            logging.info(f"Layer {layer} did not reach an approximation ratio of {acceptable_ratio}.")
+            metrics[f"algo_layer_{layer}"] = 100000  # Penalty value
+            if TRACK:
+                mlflow.log_param(f"penalty_layer_{layer}", True)
+        else:
+            logging.info(f"Layer {layer} reached an approximation ratio of {acceptable_ratio} in {num_evals} evaluations.")
+            metrics[f"algo_layer_{layer}"] = num_evals
+            if TRACK:
+                mlflow.log_param(f"penalty_layer_{layer}", False)
+
+    logging.info(f"Metrics: {metrics}")
+
+    with make_temp_directory(local=False) as temp_dir:
         plt.figure(figsize=(10, 6))
-        sns.lineplot(data=df, x='layer', y='approximation_ratio', ci='sd')
+        sns.lineplot(data=df, x='layer', y='approximation_ratio')
         plt.title('Approximation Ratio vs Number of Layers')
         plt.xlabel('Number of Layers')
         plt.ylabel('Approximation Ratio')
@@ -173,12 +261,20 @@ def main():
         nx.write_graphml(G, f'{temp_dir}/graph.graphml')
 
         df.to_csv(f'{temp_dir}/evaluations.csv', index=False)
+        
+        # Save the optimized parameters to a JSON file
+        with open(f'{temp_dir}/optimized_parameters.json', 'w') as f:
+            json.dump(optimized_parameters, f, indent=2)
 
         if TRACK:
             mlflow.log_artifacts(temp_dir)
 
+    # Extract the AR for each layer and log it
     metrics = {f"approx_ratio_layer_{k}": v for k, v in results.items()}
+    # Extract the maximum number of function evaluations for each layer and log it
     max_func_evals = {f"max_func_evals_layer_{k}": max([iteration['num_evals'] for iteration in data['iterations']]) for k, data in evaluations.items()}
+    # Fevals extraction code
+    metrics_fevals = {f"fevals_{k}": v for k, v in fevals.items()}
 
     if TRACK:
         mlflow.log_metrics(metrics)
@@ -197,18 +293,25 @@ if __name__ == "__main__":
     parser.add_argument("--track", type=str2bool, default=False, help="Enable or disable tracking of the process")
     parser.add_argument("--graph_type", type=str, default="Uniform Random", help="The type of graph to generate")
     parser.add_argument("--num_nodes", type=int, default=8, help="The number of nodes in the graph")
-    parser.add_argument("--weight_type", type=str, default=None, help="The type of weights to allocate to the edges")
+    parser.add_argument("--weight_type", type=str, default='uniform', help="The type of weights to allocate to the edges")
     parser.add_argument("--max_layers", type=int, default=2, help="The maximum number of layers to explore")
     parser.add_argument("--custom_graph", type=str, default=None, help="Path to a custom graph file")
 
     args = parser.parse_args()
-    GRAPH_TYPE = args.graph_type
     NUM_NODES = args.num_nodes
     WEIGHT_TYPE = args.weight_type
+    GRAPH_TYPE = args.graph_type
     MAX_LAYERS = args.max_layers
     TRACK = args.track
     CUSTOM_GRAPH = args.custom_graph
 
-    main()
+    main(
+        NUM_NODES=NUM_NODES,
+        WEIGHT_TYPE=WEIGHT_TYPE,
+        GRAPH_TYPE=GRAPH_TYPE,
+        MAX_LAYERS=MAX_LAYERS,
+        TRACK=TRACK,
+        CUSTOM_GRAPH=CUSTOM_GRAPH
+    )
     end_time = time.time()
     logging.info(f"Time taken: {end_time - start_time} seconds")

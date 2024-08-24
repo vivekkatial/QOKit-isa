@@ -22,7 +22,7 @@ module load Apptainer/1.1.8
 source ~/.bashrc
 
 # The script expects two arguments: graph_type and weight_type
-echo "Running instance for graph type: $1, weight type: $2"
+echo "Running instance for graph type: $1, weight type: $2, and $3 layers"
 apptainer exec \
     --env-file .env \
     --pwd /mnt \
@@ -32,4 +32,4 @@ apptainer exec \
     --graph_type "$1" \
     --num_nodes 8 \
     --weight_type "$2" \
-    --n_layers 3
+    --n_layers $3

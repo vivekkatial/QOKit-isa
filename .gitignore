@@ -162,3 +162,4 @@ cython_debug/
 **.png
 data/12-nodes/*
 data/12-nodes/**
+tmp/**
