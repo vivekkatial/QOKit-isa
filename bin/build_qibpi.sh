@@ -5,7 +5,7 @@ declare -a graph_types=("Nearly Complete BiPartite" "Uniform Random" "Power Law 
 declare -a weight_types=("uniform" "uniform_plus" "normal" "exponential" "log-normal" "cauchy")
 
 # Define the specific layer counts
-declare -a layer_counts=(2 3 4 5 6 7 8 9 10 20)
+declare -a layer_counts=(11 12 13 14 15 16 17 18 19 20)
 
 # Repeat the entire process 49 times
 for i in $(seq 1 20); do
