@@ -163,3 +163,4 @@ cython_debug/
 data/12-nodes/*
 data/12-nodes/**
 tmp/**
+data/**
