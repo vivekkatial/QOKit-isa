@@ -4,6 +4,7 @@
 inst_directory="data/isa-instances"
 
 # Loop over each node count
+i=1
 for file in "$inst_directory"/*; do
     # Extract the instance name from the file path
     instance=$(basename "$file")
@@ -12,4 +13,5 @@ for file in "$inst_directory"/*; do
     # Submit the Slurm job for each combination with logging
     echo "Run $i: Submitting job for file: $file"
     # sbatch --output="$logfile" bin/run_evolved_instance.slurm "$file"
+    ((i++))
 done
