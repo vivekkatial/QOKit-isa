@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d5" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d4" for="node" attr.name="bipartite" attr.type="long"/>
+<key id="d3" for="graph" attr.name="graph_type" attr.type="string"/>
+<key id="d2" for="graph" attr.name="weight_type" attr.type="string"/>
+<key id="d1" for="graph" attr.name="instance_class" attr.type="string"/>
+<key id="d0" for="graph" attr.name="name" attr.type="string"/>
+<graph edgedefault="undirected"><data key="d0">complete_bipartite_graph(7, 5)</data>
+<data key="d1">nearly_complete_bipartite</data>
+<data key="d2">normal</data>
+<data key="d3">Nearly Complete BiPartite</data>
+<node id="0">
+  <data key="d4">0</data>
+</node>
+<node id="1">
+  <data key="d4">0</data>
+</node>
+<node id="2">
+  <data key="d4">0</data>
+</node>
+<node id="3">
+  <data key="d4">0</data>
+</node>
+<node id="4">
+  <data key="d4">0</data>
+</node>
+<node id="5">
+  <data key="d4">0</data>
+</node>
+<node id="6">
+  <data key="d4">0</data>
+</node>
+<node id="7">
+  <data key="d4">1</data>
+</node>
+<node id="8">
+  <data key="d4">1</data>
+</node>
+<node id="9">
+  <data key="d4">1</data>
+</node>
+<node id="10">
+  <data key="d4">1</data>
+</node>
+<node id="11">
+  <data key="d4">1</data>
+</node>
+<edge source="0" target="7">
+  <data key="d5">0.0009773428796215932</data>
+</edge>
+<edge source="0" target="8">
+  <data key="d5">0.27781019388187206</data>
+</edge>
+<edge source="0" target="9">
+  <data key="d5">0.2977585225055943</data>
+</edge>
+<edge source="0" target="10">
+  <data key="d5">0.28363149876175653</data>
+</edge>
+<edge source="0" target="11">
+  <data key="d5">0.3559879770862922</data>
+</edge>
+<edge source="1" target="7">
+  <data key="d5">0.30736779764017474</data>
+</edge>
+<edge source="1" target="8">
+  <data key="d5">0.2849136063786414</data>
+</edge>
+<edge source="1" target="9">
+  <data key="d5">1.0</data>
+</edge>
+<edge source="1" target="10">
+  <data key="d5">0.2071231075317735</data>
+</edge>
+<edge source="1" target="11">
+  <data key="d5">0.31767791576486065</data>
+</edge>
+<edge source="2" target="7">
+  <data key="d5">0.5761020807875697</data>
+</edge>
+<edge source="2" target="8">
+  <data key="d5">0.25692072105333147</data>
+</edge>
+<edge source="2" target="9">
+  <data key="d5">0.2846256287922032</data>
+</edge>
+<edge source="2" target="10">
+  <data key="d5">0.2814968139731335</data>
+</edge>
+<edge source="2" target="11">
+  <data key="d5">0.0</data>
+</edge>
+<edge source="3" target="7">
+  <data key="d5">0.36427585260370976</data>
+</edge>
+<edge source="3" target="8">
+  <data key="d5">0.1019813354368397</data>
+</edge>
+<edge source="3" target="9">
+  <data key="d5">0.2514626616015711</data>
+</edge>
+<edge source="3" target="10">
+  <data key="d5">0.36417254781959835</data>
+</edge>
+<edge source="3" target="11">
+  <data key="d5">0.2895332843629903</data>
+</edge>
+<edge source="4" target="7">
+  <data key="d5">0.26831774765293176</data>
+</edge>
+<edge source="4" target="8">
+  <data key="d5">0.27258206096329207</data>
+</edge>
+<edge source="4" target="9">
+  <data key="d5">0.29050955783543747</data>
+</edge>
+<edge source="4" target="10">
+  <data key="d5">0.29798280668468596</data>
+</edge>
+<edge source="4" target="11">
+  <data key="d5">0.3523301170811781</data>
+</edge>
+<edge source="5" target="7">
+  <data key="d5">0.22750890991372053</data>
+</edge>
+<edge source="5" target="8">
+  <data key="d5">0.5480625139300734</data>
+</edge>
+<edge source="5" target="9">
+  <data key="d5">0.3811642739538349</data>
+</edge>
+<edge source="5" target="10">
+  <data key="d5">0.3586049130540456</data>
+</edge>
+<edge source="5" target="11">
+  <data key="d5">0.28033888743722873</data>
+</edge>
+<edge source="6" target="7">
+  <data key="d5">0.27293743990349745</data>
+</edge>
+<edge source="6" target="8">
+  <data key="d5">0.2989847945563572</data>
+</edge>
+<edge source="6" target="9">
+  <data key="d5">0.3076350916922604</data>
+</edge>
+<edge source="6" target="10">
+  <data key="d5">0.3100490672471187</data>
+</edge>
+<edge source="6" target="11">
+  <data key="d5">0.7394757265227992</data>
+</edge>
+</graph></graphml>

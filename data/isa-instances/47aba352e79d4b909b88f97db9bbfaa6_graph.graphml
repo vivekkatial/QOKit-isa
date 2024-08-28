@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d3" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d2" for="node" attr.name="pos" attr.type="string"/>
+<key id="d1" for="graph" attr.name="weight_type" attr.type="string"/>
+<key id="d0" for="graph" attr.name="graph_type" attr.type="string"/>
+<graph edgedefault="undirected"><data key="d0">Geometric</data>
+<data key="d1">None</data>
+<node id="0">
+  <data key="d2">[0.9711056018214256, 0.6448107010470618]</data>
+</node>
+<node id="1">
+  <data key="d2">[0.27072055162433695, 0.24680511316312603]</data>
+</node>
+<node id="2">
+  <data key="d2">[0.050807783267718065, 0.5228647685668782]</data>
+</node>
+<node id="3">
+  <data key="d2">[0.3680921896635547, 0.869531809340657]</data>
+</node>
+<node id="4">
+  <data key="d2">[0.9719338908079297, 0.9795265340921767]</data>
+</node>
+<node id="5">
+  <data key="d2">[0.572118598406878, 0.44720728090652795]</data>
+</node>
+<node id="6">
+  <data key="d2">[0.5234690706792242, 0.6082496668913981]</data>
+</node>
+<node id="7">
+  <data key="d2">[0.2740322993397474, 0.6908789483944838]</data>
+</node>
+<node id="8">
+  <data key="d2">[0.7031712984438794, 0.4851799318050396]</data>
+</node>
+<node id="9">
+  <data key="d2">[0.5205163016542574, 0.9946925040493566]</data>
+</node>
+<node id="10">
+  <data key="d2">[0.6995425038964366, 0.4943841223212374]</data>
+</node>
+<node id="11">
+  <data key="d2">[0.4149767103517472, 0.3699685768855374]</data>
+</node>
+<edge source="0" target="1">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="2">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="3">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="4">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="5">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="6">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="7">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="8">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="9">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="0" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="2">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="3">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="4">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="5">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="6">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="7">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="8">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="9">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="1" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="2" target="3">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="2" target="4">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="2" target="5">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="2" target="6">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="2" target="7">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="2" target="8">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="2" target="9">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="2" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="2" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="3" target="4">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="3" target="5">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="3" target="6">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="3" target="7">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="3" target="8">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="3" target="9">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="3" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="3" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="4" target="5">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="4" target="6">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="4" target="7">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="4" target="8">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="4" target="9">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="4" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="4" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="5" target="6">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="5" target="7">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="5" target="8">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="5" target="9">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="5" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="5" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="6" target="7">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="6" target="8">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="6" target="9">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="6" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="6" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="7" target="8">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="7" target="9">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="7" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="7" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="8" target="9">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="8" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="8" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="9" target="10">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="9" target="11">
+  <data key="d3">0.5</data>
+</edge>
+<edge source="10" target="11">
+  <data key="d3">0.5</data>
+</edge>
+</graph></graphml>

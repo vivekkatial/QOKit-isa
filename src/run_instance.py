@@ -29,7 +29,7 @@ logging.basicConfig(level=logging.INFO)
 start_time = time.time()
 
 # Constants
-LAYER_INDEPENDENT_METHODS = ['random']
+LAYER_INDEPENDENT_METHODS = ['random', 'tqa', 'qibpi']
 LAYER_DEPENDENT_METHODS = []
 # LAYER_DEPENDENT_METHODS = ['interp', 'fourier']
 

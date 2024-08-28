@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d1" for="graph" attr.name="weight_type" attr.type="string"/>
+<key id="d0" for="graph" attr.name="graph_type" attr.type="string"/>
+<graph edgedefault="undirected"><data key="d0">Uniform Random</data>
+<data key="d1">normal</data>
+<node id="0"/>
+<node id="1"/>
+<node id="2"/>
+<node id="3"/>
+<node id="4"/>
+<node id="5"/>
+<node id="6"/>
+<node id="7"/>
+<node id="8"/>
+<node id="9"/>
+<node id="10"/>
+<node id="11"/>
+<edge source="0" target="1">
+  <data key="d2">0.48445605409647846</data>
+</edge>
+<edge source="0" target="3">
+  <data key="d2">0.3558991949074678</data>
+</edge>
+<edge source="0" target="4">
+  <data key="d2">0.32554041579182985</data>
+</edge>
+<edge source="0" target="7">
+  <data key="d2">0.3803577326756587</data>
+</edge>
+<edge source="0" target="8">
+  <data key="d2">0.45945082011421534</data>
+</edge>
+<edge source="0" target="9">
+  <data key="d2">0.3078449605325539</data>
+</edge>
+<edge source="0" target="10">
+  <data key="d2">0.2737148790035497</data>
+</edge>
+<edge source="1" target="2">
+  <data key="d2">0.30510834147340654</data>
+</edge>
+<edge source="1" target="3">
+  <data key="d2">0.47627843164733746</data>
+</edge>
+<edge source="1" target="5">
+  <data key="d2">0.278243516109625</data>
+</edge>
+<edge source="1" target="7">
+  <data key="d2">0.41836165747076165</data>
+</edge>
+<edge source="1" target="8">
+  <data key="d2">0.025762792911912597</data>
+</edge>
+<edge source="1" target="11">
+  <data key="d2">0.2350353713704015</data>
+</edge>
+<edge source="2" target="5">
+  <data key="d2">0.5515299199131561</data>
+</edge>
+<edge source="2" target="6">
+  <data key="d2">0.4653220586437323</data>
+</edge>
+<edge source="2" target="9">
+  <data key="d2">0.2902085856496971</data>
+</edge>
+<edge source="2" target="10">
+  <data key="d2">0.4490087877572057</data>
+</edge>
+<edge source="2" target="11">
+  <data key="d2">0.08608595170213086</data>
+</edge>
+<edge source="3" target="4">
+  <data key="d2">0.3411322818858719</data>
+</edge>
+<edge source="3" target="5">
+  <data key="d2">0.39314019301687114</data>
+</edge>
+<edge source="3" target="7">
+  <data key="d2">0.671061338706258</data>
+</edge>
+<edge source="3" target="10">
+  <data key="d2">0.24481422466198136</data>
+</edge>
+<edge source="4" target="5">
+  <data key="d2">0.5649720301900444</data>
+</edge>
+<edge source="4" target="7">
+  <data key="d2">0.4691821822912844</data>
+</edge>
+<edge source="4" target="9">
+  <data key="d2">0.568296864847811</data>
+</edge>
+<edge source="4" target="10">
+  <data key="d2">0.21765797936416645</data>
+</edge>
+<edge source="4" target="11">
+  <data key="d2">0.5304323528299592</data>
+</edge>
+<edge source="5" target="6">
+  <data key="d2">0.49313631316006756</data>
+</edge>
+<edge source="5" target="7">
+  <data key="d2">0.733548422165641</data>
+</edge>
+<edge source="5" target="8">
+  <data key="d2">0.0</data>
+</edge>
+<edge source="5" target="10">
+  <data key="d2">0.32597562625225074</data>
+</edge>
+<edge source="6" target="7">
+  <data key="d2">1.0</data>
+</edge>
+<edge source="6" target="8">
+  <data key="d2">0.3810031333888244</data>
+</edge>
+<edge source="6" target="10">
+  <data key="d2">0.8637094685995623</data>
+</edge>
+<edge source="7" target="9">
+  <data key="d2">0.6631031928639582</data>
+</edge>
+<edge source="7" target="10">
+  <data key="d2">0.7509725713388696</data>
+</edge>
+<edge source="7" target="11">
+  <data key="d2">0.48130701178152757</data>
+</edge>
+<edge source="8" target="10">
+  <data key="d2">0.5863574266196667</data>
+</edge>
+<edge source="9" target="10">
+  <data key="d2">0.42950373578667406</data>
+</edge>
+<edge source="9" target="11">
+  <data key="d2">0.5262229867264664</data>
+</edge>
+</graph></graphml>

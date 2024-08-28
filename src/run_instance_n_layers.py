@@ -139,7 +139,7 @@ def main(**kwargs):
         logging.info(f"Reading graph from {CUSTOM_GRAPH}")
         G = nx.read_graphml(CUSTOM_GRAPH)
         G = nx.convert_node_labels_to_integers(G)
-        GRAPH_TYPE = G.graph['instance_class']
+        GRAPH_TYPE = G.graph['graph_type']
         if GRAPH_TYPE == "nearly_complete_bipartite":
             GRAPH_TYPE = "nearly_complete_bi_partite"
         WEIGHT_TYPE = G.graph['weight_type']
@@ -279,6 +279,7 @@ def main(**kwargs):
     if TRACK:
         mlflow.log_metrics(metrics)
         mlflow.log_metrics(max_func_evals)
+        mlflow.log_metrics(metrics_fevals)
         mlflow.log_metric("best_layer", best_layer)
         mlflow.log_metric("best_approximation_ratio", best_approximation_ratio)
         mlflow.end_run()

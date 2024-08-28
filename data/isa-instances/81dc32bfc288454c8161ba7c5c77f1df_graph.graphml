@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d1" for="graph" attr.name="weight_type" attr.type="string"/>
+<key id="d0" for="graph" attr.name="graph_type" attr.type="string"/>
+<graph edgedefault="undirected"><data key="d0">Power Law Tree</data>
+<data key="d1">normal</data>
+<node id="0"/>
+<node id="1"/>
+<node id="2"/>
+<node id="3"/>
+<node id="4"/>
+<node id="5"/>
+<node id="6"/>
+<node id="7"/>
+<node id="8"/>
+<node id="9"/>
+<node id="10"/>
+<node id="11"/>
+<edge source="0" target="1">
+  <data key="d2">0.3359507817290336</data>
+</edge>
+<edge source="1" target="2">
+  <data key="d2">0.16184896171378627</data>
+</edge>
+<edge source="2" target="3">
+  <data key="d2">0.2484898938286165</data>
+</edge>
+<edge source="3" target="4">
+  <data key="d2">0.7928218029648002</data>
+</edge>
+<edge source="3" target="7">
+  <data key="d2">0.08492735087786855</data>
+</edge>
+<edge source="4" target="5">
+  <data key="d2">0.37587415605375185</data>
+</edge>
+<edge source="4" target="8">
+  <data key="d2">0.0</data>
+</edge>
+<edge source="5" target="6">
+  <data key="d2">0.2381519713222571</data>
+</edge>
+<edge source="5" target="9">
+  <data key="d2">0.8151190545016066</data>
+</edge>
+<edge source="5" target="10">
+  <data key="d2">0.522831784713695</data>
+</edge>
+<edge source="5" target="11">
+  <data key="d2">1.0</data>
+</edge>
+</graph></graphml>

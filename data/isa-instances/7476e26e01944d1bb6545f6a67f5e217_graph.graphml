@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd"><key id="d2" for="edge" attr.name="weight" attr.type="double"/>
+<key id="d1" for="graph" attr.name="weight_type" attr.type="string"/>
+<key id="d0" for="graph" attr.name="graph_type" attr.type="string"/>
+<graph edgedefault="undirected"><data key="d0">3-Regular Graph</data>
+<data key="d1">log-normal</data>
+<node id="3"/>
+<node id="8"/>
+<node id="0"/>
+<node id="4"/>
+<node id="5"/>
+<node id="1"/>
+<node id="6"/>
+<node id="2"/>
+<node id="10"/>
+<node id="9"/>
+<node id="7"/>
+<node id="11"/>
+<edge source="3" target="8">
+  <data key="d2">0.04876494636190119</data>
+</edge>
+<edge source="3" target="10">
+  <data key="d2">0.17146515703925308</data>
+</edge>
+<edge source="3" target="9">
+  <data key="d2">0.1841385705239899</data>
+</edge>
+<edge source="8" target="5">
+  <data key="d2">0.2266045292000744</data>
+</edge>
+<edge source="8" target="6">
+  <data key="d2">0.5028666284003936</data>
+</edge>
+<edge source="0" target="4">
+  <data key="d2">0.21470131845835255</data>
+</edge>
+<edge source="0" target="9">
+  <data key="d2">0.13925216862590217</data>
+</edge>
+<edge source="0" target="11">
+  <data key="d2">0.11203070506126969</data>
+</edge>
+<edge source="4" target="11">
+  <data key="d2">0.2811810521565429</data>
+</edge>
+<edge source="4" target="7">
+  <data key="d2">0.07925866649372611</data>
+</edge>
+<edge source="5" target="1">
+  <data key="d2">0.24849563973806732</data>
+</edge>
+<edge source="5" target="7">
+  <data key="d2">0.0</data>
+</edge>
+<edge source="1" target="10">
+  <data key="d2">0.22495778227215357</data>
+</edge>
+<edge source="1" target="6">
+  <data key="d2">0.7734454706426663</data>
+</edge>
+<edge source="6" target="2">
+  <data key="d2">0.29577897722350904</data>
+</edge>
+<edge source="2" target="10">
+  <data key="d2">1.0</data>
+</edge>
+<edge source="2" target="11">
+  <data key="d2">0.12611124260861714</data>
+</edge>
+<edge source="9" target="7">
+  <data key="d2">0.1592160224847397</data>
+</edge>
+</graph></graphml>
