@@ -12,6 +12,6 @@ for file in "$inst_directory"/*; do
     logfile="logs/run-$instance-%x-%j-%N.out"
     # Submit the Slurm job for each combination with logging
     echo "Run $i: Submitting job for file: $file"
-    sbatch --output="$logfile" bin/bin/run_instances_n_layers.slurm "$file"
+    sbatch --output="$logfile" bin/run_instances_n_layers.slurm "$file"
     ((i++))
 done
