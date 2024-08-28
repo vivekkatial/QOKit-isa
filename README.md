@@ -1,4 +1,4 @@
-# INFORMS Publication
+# INFORMS Publication 
 
 
 ### Running with Docker
@@ -22,9 +22,9 @@ Run the instance and add .env file and mount the current directory:
 docker run -v $(pwd):/app --env-file .env -p 8888:8888 qokit
 ```
 
-#### MaxCut
+## Data Access
 
-For MaxCut, the datasets in `qokit/assets/maxcut_datasets` must be inflated
+For accessing the studied in our publication, please see the folder `data/instances-final`. The instances are in the format of `.graphml` files.
 
 
 ## Big thanks to the creators of the following libraries:

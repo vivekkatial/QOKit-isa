@@ -45,7 +45,7 @@ def main():
             runs = client.search_runs(
                 experiment_ids=[experiment_id],
                 filter_string="attributes.status = 'FINISHED' AND attributes.start_time > 1722485419000 AND params.graph_type = '%s'" % graph_type,
-                max_results=20000,
+                max_results=1000,
             )
             all_runs.extend(runs)
         

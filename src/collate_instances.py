@@ -3,6 +3,7 @@ from mlflow.tracking import MlflowClient
 import logging
 import os
 import shutil
+import networkx as nx
 
 # Configure logging
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
@@ -12,6 +13,7 @@ def process_runs(client, runs, base_dir):
     for run in runs:
         run_id = run.info.run_id
         instance_type = run.data.params.get('graph_type', 'unknown')
+        weight_type = run.data.params.get('weight_type', 'unknown')
         num_nodes = int(run.data.params.get('num_nodes', 0))
         
         # Create the directory if it doesn't exist
@@ -27,6 +29,12 @@ def process_runs(client, runs, base_dir):
             # Rename the file to include the run_id
             shutil.move(local_path, output_path)
             logger.info(f"Downloaded and saved artifact for run {run_id} to {output_path}")
+            # Read the graph and add the `graph_type` and `weight_type` as attributes
+            graph = nx.read_graphml(output_path)
+            graph.graph['graph_type'] = instance_type
+            graph.graph['weight_type'] = weight_type
+            # Save the updated graph
+            nx.write_graphml(graph, output_path)
         except Exception as e:
             logger.error(f"Failed to download artifact for run {run_id}: {e}")
 
