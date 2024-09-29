@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import mlflow
 import argparse
+import os
+import requests
+from dotenv import load_dotenv
 
 # QOKIT Imports
 from qokit.qaoa_circuit_maxcut import get_qaoa_circuit
@@ -65,6 +68,60 @@ def extract_and_save_optimized_parameters(results, evaluations, output_file='opt
     
     return optimized_parameters
 
+load_dotenv()
+BASE_URL = "http://115.146.94.114:5000"
+AUTH = (os.environ.get("BASIC_AUTH_USERNAME"), os.environ.get("BASIC_AUTH_PASSWORD"))
+
+# Have a mapping that maps the graph type what the API expects
+GRAPH_TYPE_MAPPING = {
+    "Uniform Random": "uniform_random",
+    "Nearly Complete BiPartite": "nearly_complete_bi_partite",
+    "Erdos Renyi": "uniform_random",
+    "Watts-Strogatz small world": "watts_strogatz_small_world",
+    "Geometric": "geometric",
+    "Power Law Tree": "power_law_tree",
+    "3-Regular Graph": "three_regular_graph",
+    "4-Regular Graph": "four_regular_graph"
+}
+
+
+def make_request(endpoint, data):
+    """
+    Make a request to the API endpoint with the given data.
+    """
+    url = f"{BASE_URL}{endpoint}"
+    response = requests.post(url, json=data, auth=AUTH)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error {response.status_code}: {response.text}")
+        return None
+
+def initialize_using_qibpi(G, layer):
+    """Initialize the QAOA parameters using QIBPI."""
+    endpoint = '/graph/QIBPI'
+    # Prepare the data for the API request
+    adj_matrix = nx.to_numpy_array(G).tolist()
+    graph_type = GRAPH_TYPE_MAPPING.get(G.graph.get('graph_type'), "None")
+    weight_type = G.graph.get('weight_type')
+    data = {
+        "adjacency_matrix": adj_matrix,
+        "p": layer,
+        "graph_type": graph_type,
+        "weight_type": weight_type
+    }
+    
+    result = make_request(endpoint, data)
+    if result is not None and 'beta' in result and 'gamma' in result:
+        gamma_init = result['gamma']
+        beta_init = result['beta']
+        return gamma_init, beta_init
+    else:
+        # Fallback to random initialization if the API request fails
+        print("QIBPI initialization failed. Falling back to random initialization.")
+        gamma_init = np.random.uniform(0, 2*np.pi, layer)
+        beta_init = np.random.uniform(0, np.pi, layer)
+        return gamma_init, beta_init
 
 def create_graph():
     """Generate and return a connected graph instance."""
@@ -94,14 +151,12 @@ def get_optimal_cut(G):
     return brute_force(obj, G.number_of_nodes(), function_takes="bits")[0]
 
 def run_qaoa(G, layer):
-    """Run QAOA with random initialization for a specific number of layers."""
+    """Run QAOA with QIBPI initialization for a specific number of layers."""
     optimal_cut = get_optimal_cut(G)
-    
-    # Random initialization
-    gamma_init = np.random.uniform(0, 2*np.pi, layer)
-    beta_init = np.random.uniform(0, np.pi, layer)
+    # Use QIBPI initialization
+    gamma_init, beta_init = initialize_using_qibpi(G, layer)
 
-    logging.info(f"Optimizing for Layer: {layer} with random initialization.")
+    logging.info(f"Optimizing for Layer: {layer} with QIBPI initialization.")
 
     qc = get_qaoa_circuit(G, gamma_init, beta_init, save_statevector=False)
     qc.measure_all()
@@ -174,6 +229,7 @@ def main(**kwargs):
     if TRACK:
         mlflow.set_experiment("QAOA-Layer-Exploration")
         mlflow.start_run(run_name=f"{GRAPH_TYPE} Graph")
+        mlflow.log_param("initialization", "QIBPI")
         mlflow.log_params(graph_features)
         mlflow.log_params(weighted_features)
         mlflow.log_param("num_nodes", NUM_NODES)
